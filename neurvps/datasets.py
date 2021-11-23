@@ -132,6 +132,52 @@ class Tmm17Dataset(Dataset):
         image = np.rollaxis(image, 2)
         return (torch.tensor(image * 255).float(), {"vpts": torch.tensor(vpts).float()})
 
+class RPDataset(Dataset):
+    def __init__(self, rootdir, split):
+        self.rootdir = rootdir
+        self.split = split
+
+        filelist = np.genfromtxt(f"{rootdir}/{split}.txt", dtype=str)
+        self.filelist = [osp.join(rootdir, f) for f in filelist]
+        if split == "train":
+            self.size = len(self.filelist) * C.io.augmentation_level
+        elif split == "valid":
+            self.size = len(self.filelist)
+        print(f"n{split}:", self.size)
+
+    def __len__(self):
+        return self.size
+
+    def __getitem__(self, idx):
+        iname = self.filelist[idx % len(self.filelist)]
+        image = skimage.io.imread(iname)
+        tname = iname.replace(".png", ".txt")
+        axy, bxy = np.genfromtxt(tname, skip_header=1)
+
+        a0, a1 = np.array(axy[:2]), np.array(axy[2:])
+        b0, b1 = np.array(bxy[:2]), np.array(bxy[2:])
+        xy = intersect(a0, a1, b0, b1) - 0.5
+        xy[0] *= 512 / image.shape[1]
+        xy[1] *= 512 / image.shape[0]
+        image = skimage.transform.resize(image, (512, 512))
+        if image.ndim == 2:
+            image = image[:, :, None].repeat(3, 2)
+        if self.split == "train":
+            i, j, h, w = crop(image.shape)
+        else:
+            i, j, h, w = 0, 0, image.shape[0], image.shape[1]
+        image = skimage.transform.resize(image[j : j + h, i : i + w], (512, 512))
+        xy[1] = (xy[1] - j) / h * 512
+        xy[0] = (xy[0] - i) / w * 512
+        plt.imshow(image)
+        plt.scatter(xy[0], xy[1])
+        plt.show()
+        vpts = np.array([[xy[0] / 256 - 1, 1 - xy[1] / 256, C.io.focal_length]])
+        vpts[0] /= LA.norm(vpts[0])
+
+        image, vpts = augment(image, vpts, idx // len(self.filelist))
+        image = np.rollaxis(image, 2)
+        return (torch.tensor(image * 255).float(), {"vpts": torch.tensor(vpts).float()})
 
 def augment(image, vpts, division):
     if division == 1:  # left-right flip
