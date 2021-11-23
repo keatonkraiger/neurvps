@@ -122,9 +122,9 @@ class Tmm17Dataset(Dataset):
         image = skimage.transform.resize(image[j : j + h, i : i + w], (512, 512))
         xy[1] = (xy[1] - j) / h * 512
         xy[0] = (xy[0] - i) / w * 512
-        # plt.imshow(image)
-        # plt.scatter(xy[0], xy[1])
-        # plt.show()
+        plt.imshow(image)
+        plt.scatter(xy[0], xy[1])
+        plt.show()
         vpts = np.array([[xy[0] / 256 - 1, 1 - xy[1] / 256, C.io.focal_length]])
         vpts[0] /= LA.norm(vpts[0])
 
