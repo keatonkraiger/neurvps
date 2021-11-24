@@ -1,0 +1,42 @@
+io:
+  augmentation_level: 2
+  datadir: data/Recurvps/
+  dataset: RP 
+  focal_length: 2.1875
+  logdir: logs/
+  num_vpts: 1
+  num_workers: 4
+  resume_from: logs/190518-235224-3f78daf-reproduce
+  tensorboard_port: 0
+  validation_debug: -1
+  validation_interval: 24000
+model:
+  im2col_step: 2
+  fc_channel: 1024
+  backbone: stacked_hourglass
+  batch_size: 6
+  conic_6x: false
+  cat_vpts: true
+  depth: 4
+  multires:
+  - 0.0013457768043554
+  - 0.0051941870036646
+  - 0.02004838034795
+  - 0.0774278195486317
+  - 0.299564810864565
+  num_blocks: 1
+  num_stacks: 1
+  num_steps: 4
+  output_stride: 4
+  smp_multiplier: 2
+  smp_neg: 1
+  smp_pos: 1
+  smp_rnd: 3
+  upsample_scale: 1
+optim:
+  amsgrad: true
+  lr: 0.0001
+  lr_decay_epoch: 24
+  max_epoch: 36
+  name: Adam
+  weight_decay: 1.0e-05
