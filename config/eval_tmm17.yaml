@@ -1,7 +1,7 @@
 io:
   augmentation_level: 2
-  datadir: data/tmm17/
-  dataset: TMM17
+  datadir: data/Recurvps/
+  dataset: RP 
   focal_length: 1.0
   logdir: logs/
   num_vpts: 1
