@@ -42,7 +42,7 @@ from docopt import docopt
 import neurvps
 import neurvps.models.vanishing_net as vn
 from neurvps.config import C, M
-from neurvps.datasets import Tmm17Dataset, ScanNetDataset, WireframeDataset
+from neurvps.datasets import Tmm17Dataset, ScanNetDataset, WireframeDataset, RPDataset
 
 
 def AA(x, y, threshold):
@@ -99,6 +99,8 @@ def main():
         Dataset = Tmm17Dataset
     elif C.io.dataset.upper() == "SCANNET":
         Dataset = ScanNetDataset
+    elif C.io.dataset.upper() == "RP":
+        Dataset = RPDataset
     else:
         raise NotImplementedError
 
